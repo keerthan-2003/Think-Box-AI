@@ -76,3 +76,39 @@ h2 {
   border-radius: 5px;
   cursor: pointer;
 }
+.message {
+  padding: 8px;
+  margin: 10px;
+  border-radius: 8px;
+  max-width: 70%;
+}
+
+.user {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+}
+
+.bot {
+  background-color: #f1f0f0;
+  align-self: flex-start;
+}
+
+.bot.error {
+  background-color: #ffe5e5;
+  color: red;
+  font-weight: bold;
+}
+
+.loading {
+  font-style: italic;
+  color: #888;
+}
+
+.timestamp {
+  display: block;
+  font-size: 0.75em;
+  color: #999;
+  margin-top: 5px;
+  text-align: right;
+}
+
