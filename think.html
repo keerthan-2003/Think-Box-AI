@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Gemini Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat {
+      width: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .messages {
+      padding: 10px;
+      height: 400px;
+      overflow-y: auto;
+    }
+    .msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+    .user { background: #d1e7dd; margin-left: auto; }
+    .bot { background: #f8d7da; margin-right: auto; }
+    .input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      background: #3f51b5;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat">
+  <div class="messages" id="messages"></div>
+  <div class="input">
+    <input type="text" id="input" placeholder="Type a message..." />
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<script>
+  const API_KEY = 'AIzaSyDB96N-jLau_uQly8R_9EBaBX7wFs4VK6A';
+  const messagesDiv = document.getElementById('messages');
+  const input = document.getElementById('input');
+
+  function addMessage(text, sender) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.innerText = text;
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, 'user');
+    input.value = '';
+    addMessage('Thinking...', 'bot');
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text }] }]
+      })
+    });
+
+    const data = await res.json();
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
+
+    // Remove "Thinking..." before showing reply
+    const bots = document.querySelectorAll('.bot');
+    if (bots.length) bots[bots.length - 1].remove();
+
+    addMessage(reply, 'bot');
+  }
+
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') send();
+  });
+</script>
+
+</body>
+</html>
